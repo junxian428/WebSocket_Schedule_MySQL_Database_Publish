@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>WebSocket Example</title>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+	<div id="app">
+		<form v-on:submit.prevent>
+			<label for="user">User:</label>
+			<input type="text" id="user" v-model="user" />
+			<button v-on:click="connect" :disabled="connected">Connect</button>
+			<button v-on:click="disconnect" :disabled="!connected">Disconnect</button>
+			<button v-on:click="sendData">Send</button>
+		</form>
+		<p v-for="message in messages" :key="message">{{ message }}</p>
+	</div>
+
+	<script>
+	// Vue.js app
+	var app = new Vue({
+		el: '#app',
+		data: {
+			user: '',
+			connected: false,
+			messages: []
+		},
+		methods: {
+			connect() {
+				this.ws = new WebSocket('ws://localhost:8088/user');
+				this.ws.onmessage = this.handleMessage;
+				this.connected = true;
+			},
+			disconnect() {
+				if (this.ws) {
+					this.ws.close();
+				}
+				this.connected = false;
+				console.log("WebSocket is disconnected");
+			},
+			sendData() {
+				var data = JSON.stringify({
+						'user': this.user
+					});
+				this.ws.send(data);
+			},
+			handleMessage(event) {
+				this.messages.push(event.data);
+			},
+			handleError(event) {
+			this.errorMessage = 'WebSocket error occurred: ' + event.message;
+			console.error(this.errorMessage);
+			}
+		}
+	});
+	</script>
+</body>
+</html>
