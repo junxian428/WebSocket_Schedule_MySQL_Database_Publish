@@ -90,6 +90,9 @@ public class ChatController {
                         System.out.println("UserID: " + userid + ", TotalMark: " + totalmark);
                         message += "UserID: " + userid + ", TotalMark: " + totalmark + "\n";
                     }
+                                        session.sendMessage(new TextMessage(message));
+
+                        message = "";
 
                         resultSet.close();
                         statement.close();
@@ -105,7 +108,6 @@ public class ChatController {
 
 
 
-                    session.sendMessage(new TextMessage(message));
                 } catch (IOException e) {
                     System.out.println("Error :" +e);
                     e.printStackTrace();
