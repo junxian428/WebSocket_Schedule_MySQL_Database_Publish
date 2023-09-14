@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -84,15 +85,23 @@ public class ChatController {
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery("SELECT userid, totalmark FROM usermark ORDER BY totalmark DESC LIMIT 10");
 
+                        JSONArray jsonArray = new JSONArray(); // Create a JSON array to hold the data
+
+
                     while (resultSet.next()) {
                         int userid = resultSet.getInt("userid");
                         int totalmark = resultSet.getInt("totalmark");
                         System.out.println("UserID: " + userid + ", TotalMark: " + totalmark);
                         message += "UserID: " + userid + ", TotalMark: " + totalmark + "\n";
+             
+                        JSONObject jsonObject = new JSONObject(); // Create a JSON object for each row
+                        jsonObject.put("UserID", userid);
+                        jsonObject.put("TotalMark", totalmark);
+                
+                        jsonArray.put(jsonObject); // Add the JSON object to the array
                     }
-                                        session.sendMessage(new TextMessage(message));
+                        session.sendMessage(new TextMessage(jsonArray.toString()));
 
-                        message = "";
 
                         resultSet.close();
                         statement.close();
